@@ -195,6 +195,15 @@ export const en = {
     master: 'Now you must undo what you know: division is multiplication reversed.',
   },
 
+  errorScreen: {
+    title: 'Your scroll is damaged',
+    body:
+      'Something went wrong and the dojo could not open. Reloading may help. If it keeps happening, you can erase your progress and start over.',
+    reload: 'Try again',
+    reset: 'Erase my progress',
+    resetConfirm: 'Leave the dojo and erase all progress?',
+  },
+
   achievements: {
     scrollEarned: 'Scroll earned: {name}',
     firstSteps: 'First Steps',

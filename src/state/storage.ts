@@ -1,4 +1,5 @@
 import { detectLanguage } from '../i18n'
+import { isBeltId } from '../game/belts'
 import type { Profile, Settings } from '../game/types'
 
 const STORAGE_KEY = 'ninja.profile'
@@ -40,6 +41,7 @@ function migrate(envelope: Envelope): Profile {
   return {
     ...createProfile(profile.name ?? 'Young Ninja'),
     ...profile,
+    belt: isBeltId(profile.belt) ? profile.belt : 'white',
     settings: { ...DEFAULT_SETTINGS, ...(profile.settings ?? {}) },
     facts: profile.facts ?? {},
     achievements: profile.achievements ?? [],
