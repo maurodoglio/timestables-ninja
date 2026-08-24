@@ -1,4 +1,5 @@
 import type { Answer } from '../game/scoring'
+import { useT } from '../i18n/useT'
 
 interface Props {
   title: string
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function ResultSummary({ title, answers, xpEarned, children, onAgain, onHome }: Props) {
+  const { t, fmt } = useT()
   const correct = answers.filter((a) => a.correct).length
   const avg = answers.length
     ? Math.round(answers.reduce((s, a) => s + a.ms, 0) / answers.length) / 1000
@@ -26,26 +28,27 @@ export function ResultSummary({ title, answers, xpEarned, children, onAgain, onH
             <div className="value">
               {correct}/{answers.length}
             </div>
-            <div className="label">Strikes landed</div>
+            <div className="label">{t('result', 'strikesLanded')}</div>
           </div>
           <div className="stat">
-            <div className="value">{avg.toFixed(1)}s</div>
-            <div className="label">Average speed</div>
+            <div className="value">{fmt.number(avg, 1)}s</div>
+            <div className="label">{t('result', 'averageSpeed')}</div>
           </div>
           <div className="stat">
             <div className="value">+{xpEarned}</div>
-            <div className="label">Training points</div>
+            <div className="label">{t('result', 'trainingPoints')}</div>
           </div>
         </div>
 
         {missed.length > 0 && (
           <div>
-            <h3>Stances to practise</h3>
+            <h3>{t('result', 'stancesToPractise')}</h3>
             <div className="row">
               {missed.slice(0, 12).map((a, i) => (
                 <span className="chip" key={i}>
-                  {a.question.left} {a.question.kind === 'divide' ? '÷' : '×'} {a.question.right} ={' '}
-                  {a.question.answer}
+                  {a.question.left}{' '}
+                  {a.question.kind === 'divide' ? fmt.divideSymbol : fmt.multiplySymbol}{' '}
+                  {a.question.right} = {a.question.answer}
                 </span>
               ))}
             </div>
@@ -55,11 +58,11 @@ export function ResultSummary({ title, answers, xpEarned, children, onAgain, onH
         <div className="row">
           {onAgain && (
             <button type="button" className="btn btn-primary" onClick={onAgain}>
-              Train again
+              {t('common', 'trainAgain')}
             </button>
           )}
           <button type="button" className="btn" onClick={onHome}>
-            Back to the dojo
+            {t('common', 'backToDojo')}
           </button>
         </div>
       </div>

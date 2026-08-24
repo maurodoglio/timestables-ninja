@@ -5,6 +5,7 @@ import { selectQuestions } from '../game/questions'
 import type { Answer } from '../game/scoring'
 import { Drill } from '../components/Drill'
 import { ResultSummary } from '../components/ResultSummary'
+import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'
 import { useFinishSession } from '../state/useFinishSession'
 
@@ -14,6 +15,7 @@ export function Sparring() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
   const finish = useFinishSession()
+  const { t, fmt } = useT()
   const tables = unlockedTables(profile.belt)
 
   const [phase, setPhase] = useState<'brief' | 'drill' | 'done'>('brief')
@@ -59,7 +61,11 @@ export function Sparring() {
     const isBest = score >= profile.sparringBest && score > 0
     return (
       <ResultSummary
-        title={isBest ? `New personal best: ${score}!` : `You landed ${score} strikes`}
+        title={
+          isBest
+            ? t('sparringScreen', 'newBest', { score })
+            : t('sparringScreen', 'landed', { score })
+        }
         answers={answers}
         xpEarned={xp}
         onAgain={() => {
@@ -68,33 +74,30 @@ export function Sparring() {
         }}
         onHome={() => navigate('/')}
       >
-        <p>Personal best: {profile.sparringBest}</p>
+        <p>{t('sparringScreen', 'best', { best: profile.sparringBest })}</p>
       </ResultSummary>
     )
   }
 
   return (
     <div className="panel stack">
-      <h1>⚡ Sparring</h1>
-      <p>
-        Sixty seconds. Land as many clean strikes as you can across your unlocked tables (
-        {tables.join(', ')}). No penalties, just speed.
-      </p>
+      <h1>{t('sparringScreen', 'title')}</h1>
+      <p>{t('sparringScreen', 'intro', { tables: fmt.list(tables) })}</p>
       <div className="grid">
         <div className="stat">
           <div className="value">{SPARRING_SECONDS}s</div>
-          <div className="label">Round length</div>
+          <div className="label">{t('sparringScreen', 'roundLength')}</div>
         </div>
         <div className="stat">
           <div className="value">{profile.sparringBest}</div>
-          <div className="label">Personal best</div>
+          <div className="label">{t('sparringScreen', 'personalBest')}</div>
         </div>
       </div>
       <button type="button" className="btn btn-primary" onClick={() => setPhase('drill')}>
-        Start the round
+        {t('sparringScreen', 'start')}
       </button>
       <button type="button" className="btn btn-ghost" onClick={() => navigate('/')}>
-        Back to the dojo
+        {t('common', 'backToDojo')}
       </button>
     </div>
   )

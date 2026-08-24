@@ -1,21 +1,29 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LANGUAGES } from '../i18n'
+import { useT } from '../i18n/useT'
 import { useProfile, useRequiredProfile } from '../state/ProfileContext'
 import { exportProfile, importProfile } from '../state/storage'
 
 interface ToggleProps {
   label: string
   hint?: string
+  onLabel: string
+  offLabel: string
   value: boolean
   onChange: (next: boolean) => void
 }
 
-function Toggle({ label, hint, value, onChange }: ToggleProps) {
+function Toggle({ label, hint, onLabel, offLabel, value, onChange }: ToggleProps) {
   return (
     <div className="switch">
       <span>
         {label}
-        {hint && <div className="muted" style={{ fontSize: '0.85rem' }}>{hint}</div>}
+        {hint && (
+          <div className="muted" style={{ fontSize: '0.85rem' }}>
+            {hint}
+          </div>
+        )}
       </span>
       <button
         type="button"
@@ -23,7 +31,7 @@ function Toggle({ label, hint, value, onChange }: ToggleProps) {
         aria-pressed={value}
         onClick={() => onChange(!value)}
       >
-        {value ? 'On' : 'Off'}
+        {value ? onLabel : offLabel}
       </button>
     </div>
   )
@@ -33,8 +41,12 @@ export function Settings() {
   const profile = useRequiredProfile()
   const { updateSettings, setProfile, resetProfile } = useProfile()
   const navigate = useNavigate()
+  const { t, language } = useT()
   const fileRef = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState('')
+
+  const on = t('common', 'on')
+  const off = t('common', 'off')
 
   const download = () => {
     const blob = new Blob([exportProfile(profile)], { type: 'application/json' })
@@ -49,52 +61,79 @@ export function Settings() {
   const upload = async (file: File) => {
     try {
       setProfile(importProfile(await file.text()))
-      setMessage('Scroll restored. Welcome back.')
+      setMessage(t('settings', 'restored'))
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'That scroll could not be read.')
+      setMessage(
+        err instanceof Error && err.message === 'NOT_A_PROFILE'
+          ? t('settings', 'notAScroll')
+          : t('settings', 'restoreFailed'),
+      )
     }
   }
 
   return (
     <div className="stack">
       <div className="panel stack">
-        <h1>⚙️ Dojo settings</h1>
+        <h1>{t('settings', 'title')}</h1>
+
+        <div className="switch">
+          <span id="language-label">{t('settings', 'language')}</span>
+          <div className="row" role="group" aria-labelledby="language-label">
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.id}
+                type="button"
+                className={`btn btn-small ${language === l.id ? 'btn-primary' : ''}`}
+                aria-pressed={language === l.id}
+                onClick={() => updateSettings({ language: l.id })}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <Toggle
-          label="Show the timer bar"
-          hint="Turn this off if counting down feels stressful. Timing still counts during gradings."
+          label={t('settings', 'showTimer')}
+          hint={t('settings', 'showTimerHint')}
+          onLabel={on}
+          offLabel={off}
           value={profile.settings.showTimer}
           onChange={(v) => updateSettings({ showTimer: v })}
         />
         <Toggle
-          label="Sound effects"
+          label={t('settings', 'sound')}
+          onLabel={on}
+          offLabel={off}
           value={profile.settings.sound}
           onChange={(v) => updateSettings({ sound: v })}
         />
         <Toggle
-          label="Reduce motion"
-          hint="Removes animations across the app."
+          label={t('settings', 'reducedMotion')}
+          hint={t('settings', 'reducedMotionHint')}
+          onLabel={on}
+          offLabel={off}
           value={profile.settings.reducedMotion}
           onChange={(v) => updateSettings({ reducedMotion: v })}
         />
         <Toggle
-          label="Easier-to-read font"
+          label={t('settings', 'readableFont')}
+          onLabel={on}
+          offLabel={off}
           value={profile.settings.readableFont}
           onChange={(v) => updateSettings({ readableFont: v })}
         />
       </div>
 
       <div className="panel stack">
-        <h2>Your ninja scroll</h2>
-        <p>
-          Progress lives only on this device. Save a scroll file to move to another device, or to
-          keep a backup.
-        </p>
+        <h2>{t('settings', 'scrollTitle')}</h2>
+        <p>{t('settings', 'scrollBody')}</p>
         <div className="row">
           <button type="button" className="btn" onClick={download}>
-            Save my scroll
+            {t('settings', 'save')}
           </button>
           <button type="button" className="btn" onClick={() => fileRef.current?.click()}>
-            Restore a scroll
+            {t('settings', 'restore')}
           </button>
           <input
             ref={fileRef}
@@ -112,24 +151,24 @@ export function Settings() {
       </div>
 
       <div className="panel stack">
-        <h2>Start over</h2>
-        <p>This erases every belt, point and scroll. It cannot be undone.</p>
+        <h2>{t('settings', 'resetTitle')}</h2>
+        <p>{t('settings', 'resetBody')}</p>
         <button
           type="button"
           className="btn"
           onClick={() => {
-            if (window.confirm('Leave the dojo and erase all progress?')) {
+            if (window.confirm(t('settings', 'resetConfirm'))) {
               resetProfile()
               navigate('/')
             }
           }}
         >
-          Erase my progress
+          {t('settings', 'reset')}
         </button>
       </div>
 
       <button type="button" className="btn btn-ghost" onClick={() => navigate('/')}>
-        Back to the dojo
+        {t('common', 'backToDojo')}
       </button>
     </div>
   )

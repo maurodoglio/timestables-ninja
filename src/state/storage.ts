@@ -1,3 +1,4 @@
+import { detectLanguage } from '../i18n'
 import type { Profile, Settings } from '../game/types'
 
 const STORAGE_KEY = 'ninja.profile'
@@ -9,6 +10,7 @@ interface Envelope {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  language: 'en',
   showTimer: true,
   sound: true,
   reducedMotion: false,
@@ -27,7 +29,7 @@ export function createProfile(name: string): Profile {
     achievements: [],
     history: [],
     sparringBest: 0,
-    settings: { ...DEFAULT_SETTINGS },
+    settings: { ...DEFAULT_SETTINGS, language: detectLanguage() },
     createdAt: Date.now(),
   }
 }
@@ -80,6 +82,6 @@ export function exportProfile(profile: Profile): string {
 
 export function importProfile(json: string): Profile {
   const parsed = JSON.parse(json) as Envelope
-  if (!parsed?.profile?.id) throw new Error('That scroll is not a ninja profile.')
+  if (!parsed?.profile?.id) throw new Error('NOT_A_PROFILE')
   return migrate(parsed)
 }

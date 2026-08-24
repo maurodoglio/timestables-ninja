@@ -50,6 +50,31 @@ often and mastered ones resurface just enough to stay sharp.
 - Timer bar can be hidden, motion can be reduced, and a more readable font is available.
 - Progress can be exported to a JSON "ninja scroll" and restored on another device.
 
+## Languages
+
+The dojo speaks **English** and **Italian** (*Tabelline Ninja*). The language is
+guessed from the browser when a student first joins, and can be changed at any
+time under ⚙️ Dojo settings — it is saved with the profile.
+
+Italian is a full localisation, not just translated labels: belts become
+*Cintura Bianca* … *Maestro Ninja*, the sensei's tips are re-written so the
+mnemonics still work, division uses the `:` symbol taught in Italian primary
+schools, and numbers use a decimal comma.
+
+Translations live in `src/i18n`:
+
+- `en.ts` — the English catalogue and the `Translations` type
+- `it.ts` — the Italian catalogue, typed as `Translations` so a missing key is a
+  compile error
+- `index.ts` — language detection, `{placeholder}` interpolation and locale
+  formatters
+- `useT.ts` — the `useT()` hook React components use
+
+To add a language, copy `it.ts`, register it in `CATALOGUES` and `LANGUAGES` in
+`index.ts`, and widen the `Language` union in `src/game/types.ts`. The test in
+`src/i18n/i18n.test.ts` checks every catalogue has matching keys and
+placeholders.
+
 ## Development
 
 ```bash

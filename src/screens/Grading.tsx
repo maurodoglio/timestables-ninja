@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GRADING_LENGTH, getBelt, gradingTables, nextBelt } from '../game/belts'
+import { GRADING_LENGTH, gradingTables, nextBelt } from '../game/belts'
 import { selectQuestions } from '../game/questions'
 import { evaluateGrading, type Answer, type GradingOutcome } from '../game/scoring'
 import { Drill } from '../components/Drill'
 import { ResultSummary } from '../components/ResultSummary'
 import { BeltBadge, NinjaAvatar } from '../components/Belt'
+import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'
 import { useFinishSession } from '../state/useFinishSession'
 
@@ -13,7 +14,9 @@ export function Grading() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
   const finish = useFinishSession()
+  const { t, fmt } = useT()
   const target = nextBelt(profile.belt)
+  const targetName = target ? t('belts', target.id) : ''
 
   const [phase, setPhase] = useState<'brief' | 'drill' | 'done'>('brief')
   const [answers, setAnswers] = useState<Answer[]>([])
@@ -38,10 +41,10 @@ export function Grading() {
   if (!target) {
     return (
       <div className="panel stack">
-        <h1>🏆 No grading left</h1>
-        <p>You already hold the highest rank in the dojo. Keep sparring to stay sharp.</p>
+        <h1>{t('grading', 'noneLeftTitle')}</h1>
+        <p>{t('grading', 'noneLeftBody')}</p>
         <button type="button" className="btn" onClick={() => navigate('/')}>
-          Back to the dojo
+          {t('common', 'backToDojo')}
         </button>
       </div>
     )
@@ -70,7 +73,11 @@ export function Grading() {
   if (phase === 'done' && outcome) {
     return (
       <ResultSummary
-        title={outcome.passed ? `You earned the ${target.name}!` : 'Sensei says: train more'}
+        title={
+          outcome.passed
+            ? t('grading', 'passedTitle', { belt: targetName })
+            : t('grading', 'failedTitle')
+        }
         answers={answers}
         xpEarned={xp}
         onAgain={
@@ -91,24 +98,23 @@ export function Grading() {
             </div>
             <NinjaAvatar belt={target.id} size={110} />
             <p style={{ marginTop: 12 }}>
-              Bow to your sensei. You now wear the <strong>{target.name}</strong>.
+              {t('grading', 'ceremony', { belt: targetName })}
             </p>
             <BeltBadge belt={target.id} />
           </div>
         ) : (
           <div className="stack">
             <p>
-              {!outcome.accuracyMet && 'You need at least 90% correct. '}
-              {outcome.accuracyMet && !outcome.speedMet &&
-                `Your accuracy was excellent, but you must average under ${target.targetAverageSeconds}s per answer. `}
-              Head to Weak Stances and drill the facts below — the belt will come.
+              {!outcome.accuracyMet && t('grading', 'needAccuracy')}
+              {outcome.accuracyMet &&
+                !outcome.speedMet &&
+                t('grading', 'needSpeed', {
+                  seconds: fmt.number(target.targetAverageSeconds, 1),
+                })}
+              {t('grading', 'failedAdvice')}
             </p>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => navigate('/weak')}
-            >
-              Drill my weak stances
+            <button type="button" className="btn" onClick={() => navigate('/weak')}>
+              {t('grading', 'goToWeak')}
             </button>
           </div>
         )}
@@ -119,41 +125,39 @@ export function Grading() {
   return (
     <div className="stack">
       <div className="panel stack">
-        <h1>🥋 Grading: {target.name}</h1>
+        <h1>{t('grading', 'title', { belt: targetName })}</h1>
         <BeltBadge belt={target.id} />
-        <p>“{target.senseiTip}” — Sensei</p>
+        <p>{t('dojo', 'senseiQuote', { tip: t('senseiTips', target.id) })}</p>
         <div className="grid">
           <div className="stat">
             <div className="value">{GRADING_LENGTH}</div>
-            <div className="label">Questions</div>
+            <div className="label">{t('grading', 'questions')}</div>
           </div>
           <div className="stat">
             <div className="value">{target.secondsPerQuestion}s</div>
-            <div className="label">Per question</div>
+            <div className="label">{t('grading', 'perQuestion')}</div>
           </div>
           <div className="stat">
             <div className="value">90%</div>
-            <div className="label">To pass</div>
+            <div className="label">{t('grading', 'toPass')}</div>
           </div>
           <div className="stat">
-            <div className="value">{target.targetAverageSeconds}s</div>
-            <div className="label">Average needed</div>
+            <div className="value">{fmt.number(target.targetAverageSeconds, 1)}s</div>
+            <div className="label">{t('grading', 'averageNeeded')}</div>
           </div>
         </div>
         <p>
-          Tables covered: {gradingTables(target.id).join(', ')}
-          {target.includeDivision ? ' — including division facts.' : '.'}
+          {t('grading', 'tablesCovered', { tables: fmt.list(gradingTables(target.id)) })}
+          {target.includeDivision ? t('grading', 'withDivision') : '.'}
         </p>
         <p className="muted">
-          You can retake a grading as many times as you like, and you never lose a belt you have
-          earned. Your current rank is{' '}
-          <strong>{getBelt(profile.belt).name}</strong>.
+          {t('grading', 'retakeNote', { belt: t('belts', profile.belt) })}
         </p>
         <button type="button" className="btn btn-primary" onClick={() => setPhase('drill')}>
-          Bow and begin
+          {t('grading', 'begin')}
         </button>
         <button type="button" className="btn btn-ghost" onClick={() => navigate('/')}>
-          Not yet
+          {t('common', 'notYet')}
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { getAchievement } from '../state/achievements'
+import { useT } from '../i18n/useT'
 import { useProfile } from '../state/ProfileContext'
 import { useToast } from '../components/Toast'
 import type { RecordOptions } from '../state/session'
@@ -11,6 +12,7 @@ import type { RecordOptions } from '../state/session'
 export function useFinishSession() {
   const { finishSession } = useProfile()
   const toast = useToast()
+  const { t } = useT()
 
   return useCallback(
     (options: RecordOptions) => {
@@ -18,10 +20,16 @@ export function useFinishSession() {
       if (!outcome) return null
       for (const id of outcome.unlockedAchievements) {
         const a = getAchievement(id)
-        if (a) toast({ icon: a.icon, title: `Scroll earned: ${a.name}`, body: a.description })
+        if (a) {
+          toast({
+            icon: a.icon,
+            title: t('achievements', 'scrollEarned', { name: t('achievements', a.key) }),
+            body: t('achievements', a.descKey),
+          })
+        }
       }
       return outcome
     },
-    [finishSession, toast],
+    [finishSession, toast, t],
   )
 }

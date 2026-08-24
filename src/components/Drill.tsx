@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Question } from '../game/types'
 import type { Answer } from '../game/scoring'
+import { useT } from '../i18n/useT'
 import { NumberPad } from './NumberPad'
 
 export interface DrillConfig {
@@ -34,6 +35,7 @@ export function Drill({
   onFinish,
   onQuit,
 }: DrillProps) {
+  const { t, fmt } = useT()
   const [queue, setQueue] = useState<Question[]>(questions)
   const [index, setIndex] = useState(0)
   const [entry, setEntry] = useState('')
@@ -138,7 +140,7 @@ export function Drill({
 
   if (!question) return null
 
-  const symbol = question.kind === 'divide' ? '÷' : '×'
+  const symbol = question.kind === 'divide' ? fmt.divideSymbol : fmt.multiplySymbol
   const boxClass =
     status === 'correct' ? 'answer-box correct' : status === 'wrong' ? 'answer-box wrong' : 'answer-box'
 
@@ -146,12 +148,15 @@ export function Drill({
     <div className="stack">
       <div className="row spread">
         <button type="button" className="btn btn-ghost btn-small" onClick={onQuit}>
-          ← Leave the mat
+          {t('common', 'leaveMat')}
         </button>
         <span className="chip" aria-live="off">
           {totalSeconds
-            ? `⏱ ${Math.ceil(totalLeft)}s left`
-            : `Question ${Math.min(index + 1, queue.length)} of ${queue.length}`}
+            ? t('drill', 'secondsLeft', { seconds: Math.ceil(totalLeft) })
+            : t('drill', 'questionOf', {
+                current: Math.min(index + 1, queue.length),
+                total: queue.length,
+              })}
         </span>
       </div>
 
@@ -172,11 +177,16 @@ export function Drill({
           {status === 'wrong' && entry === '' ? '—' : entry || '?'}
         </div>
         <div className={`feedback ${status === 'correct' ? 'good' : 'calm'}`} role="status">
-          {status === 'correct' && 'Clean strike!'}
+          {status === 'correct' && t('drill', 'correct')}
           {status === 'wrong' &&
             (teachOnMistake
-              ? `Not yet — ${question.left} ${symbol} ${question.right} = ${question.answer}. Remember it.`
-              : 'Keep your stance. Next!')}
+              ? t('drill', 'wrongTeach', {
+                  left: question.left,
+                  symbol,
+                  right: question.right,
+                  answer: question.answer,
+                })
+              : t('drill', 'wrongQuick'))}
         </div>
         <NumberPad
           value={entry}
