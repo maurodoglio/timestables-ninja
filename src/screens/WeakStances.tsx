@@ -5,6 +5,7 @@ import { makeQuestion, weakestFacts } from '../game/questions'
 import type { Answer } from '../game/scoring'
 import { Drill } from '../components/Drill'
 import { ResultSummary } from '../components/ResultSummary'
+import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'
 import { useFinishSession } from '../state/useFinishSession'
 
@@ -14,6 +15,7 @@ export function WeakStances() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
   const finish = useFinishSession()
+  const { t, fmt } = useT()
 
   const [phase, setPhase] = useState<'brief' | 'drill' | 'done'>('brief')
   const [answers, setAnswers] = useState<Answer[]>([])
@@ -37,10 +39,10 @@ export function WeakStances() {
   if (weak.length === 0) {
     return (
       <div className="panel stack">
-        <h1>🎯 Weak Stances</h1>
-        <p>The sensei has not seen you fight yet. Train first, then come back.</p>
+        <h1>{t('weak', 'title')}</h1>
+        <p>{t('weak', 'emptyBody')}</p>
         <button type="button" className="btn btn-primary" onClick={() => navigate('/training')}>
-          Go to the Training Hall
+          {t('weak', 'goTraining')}
         </button>
       </div>
     )
@@ -66,7 +68,7 @@ export function WeakStances() {
   if (phase === 'done') {
     return (
       <ResultSummary
-        title="Stances strengthened"
+        title={t('result', 'stancesStrengthened')}
         answers={answers}
         xpEarned={xp}
         onAgain={() => {
@@ -80,23 +82,20 @@ export function WeakStances() {
 
   return (
     <div className="panel stack">
-      <h1>🎯 Weak Stances</h1>
-      <p>
-        These are the facts you miss most or answer slowest. Untimed, with the answer shown
-        whenever you slip — repetition is the technique here.
-      </p>
+      <h1>{t('weak', 'title')}</h1>
+      <p>{t('weak', 'intro')}</p>
       <div className="row">
         {weak.map((f, i) => (
           <span className="chip" key={i}>
-            {f.a} × {f.b}
+            {f.a} {fmt.multiplySymbol} {f.b}
           </span>
         ))}
       </div>
       <button type="button" className="btn btn-primary" onClick={() => setPhase('drill')}>
-        Drill {DRILL_LENGTH} repetitions
+        {t('weak', 'drill', { count: DRILL_LENGTH })}
       </button>
       <button type="button" className="btn btn-ghost" onClick={() => navigate('/')}>
-        Back to the dojo
+        {t('common', 'backToDojo')}
       </button>
     </div>
   )

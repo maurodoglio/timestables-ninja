@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { getBelt, nextBelt, unlockedTables } from '../game/belts'
+import { nextBelt, unlockedTables } from '../game/belts'
 import { weakestFacts } from '../game/questions'
 import { BeltBadge, NinjaAvatar } from '../components/Belt'
+import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'
 
 interface ModeCardProps {
@@ -27,8 +28,9 @@ function ModeCard({ icon, title, desc, onClick, disabled }: ModeCardProps) {
 export function Dojo() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
-  const belt = getBelt(profile.belt)
+  const { t, fmt } = useT()
   const next = nextBelt(profile.belt)
+  const nextName = next ? t('belts', next.id) : ''
   const weak = weakestFacts(unlockedTables(profile.belt), profile.facts, 1)
 
   return (
@@ -43,19 +45,24 @@ export function Dojo() {
             </div>
           </div>
           <div className="row">
-            <span className="chip">🔥 {profile.streakDays} day streak</span>
-            <span className="chip">⭐ {profile.xp} points</span>
+            <span className="chip">{t('dojo', 'streak', { count: profile.streakDays })}</span>
+            <span className="chip">{t('dojo', 'points', { count: profile.xp })}</span>
           </div>
         </div>
-        <p>“{belt.senseiTip}” — Sensei</p>
+        <p>{t('dojo', 'senseiQuote', { tip: t('senseiTips', profile.belt) })}</p>
       </div>
 
       <div className="panel stack">
-        <h2>{next ? `Next grading: ${next.name}` : 'You are a Ninja Master'}</h2>
+        <h2>
+          {next ? t('dojo', 'nextGrading', { belt: nextName }) : t('dojo', 'masterTitle')}
+        </h2>
         <p>
           {next
-            ? `Master the ${next.cumulativeTables.join(', ')} times tables, then take the grading to earn your ${next.name.toLowerCase()}.`
-            : 'Keep your skills sharp — sparring and weak stances still await.'}
+            ? t('dojo', 'nextGradingBody', {
+                tables: fmt.list(next.cumulativeTables),
+                belt: nextName.toLowerCase(),
+              })
+            : t('dojo', 'masterBody')}
         </p>
         {next && (
           <div className="row">
@@ -64,7 +71,7 @@ export function Dojo() {
               className="btn btn-primary"
               onClick={() => navigate('/grading')}
             >
-              Take the {next.name} grading
+              {t('dojo', 'takeGrading', { belt: nextName })}
             </button>
           </div>
         )}
@@ -73,31 +80,31 @@ export function Dojo() {
       <div className="grid">
         <ModeCard
           icon="🏯"
-          title="Training Hall"
-          desc="Practise any table you have unlocked, at your own pace."
+          title={t('dojo', 'trainingHall')}
+          desc={t('dojo', 'trainingHallDesc')}
           onClick={() => navigate('/training')}
         />
         <ModeCard
           icon="🎯"
-          title="Weak Stances"
+          title={t('dojo', 'weakStances')}
           desc={
             weak.length > 0
-              ? `Drill the facts you keep missing, starting with ${weak[0].a} × ${weak[0].b}.`
-              : 'Train a little first, then the sensei will find your weak spots.'
+              ? t('dojo', 'weakStancesDesc', { a: weak[0].a, b: weak[0].b })
+              : t('dojo', 'weakStancesEmpty')
           }
           onClick={() => navigate('/weak')}
           disabled={weak.length === 0}
         />
         <ModeCard
           icon="⚡"
-          title="Sparring"
-          desc={`Sixty seconds, as many strikes as you can. Best: ${profile.sparringBest}.`}
+          title={t('dojo', 'sparring')}
+          desc={t('dojo', 'sparringDesc', { best: profile.sparringBest })}
           onClick={() => navigate('/sparring')}
         />
         <ModeCard
           icon="📜"
-          title="Progress Scroll"
-          desc="See your mastery grid, history and earned scrolls."
+          title={t('dojo', 'progressScroll')}
+          desc={t('dojo', 'progressScrollDesc')}
           onClick={() => navigate('/progress')}
         />
       </div>

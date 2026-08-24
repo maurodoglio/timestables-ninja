@@ -12,7 +12,6 @@ export type BeltId =
 
 export interface Belt {
   id: BeltId
-  name: string
   /** Tables introduced at this belt. */
   newTables: number[]
   /** Every table a student knows once this belt is earned. */
@@ -26,7 +25,6 @@ export interface Belt {
   targetAverageSeconds: number
   /** Whether the grading also asks division facts. */
   includeDivision: boolean
-  senseiTip: string
 }
 
 export interface Fact {
@@ -71,7 +69,10 @@ export interface SessionResult {
   at: number
 }
 
+export type Language = 'en' | 'it'
+
 export interface Settings {
+  language: Language
   showTimer: boolean
   sound: boolean
   reducedMotion: boolean

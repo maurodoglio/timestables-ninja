@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useT } from '../i18n/useT'
 
 interface NumberPadProps {
   value: string
@@ -14,6 +15,7 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
  * works well on a school laptop.
  */
 export function NumberPad({ value, onChange, onSubmit, disabled }: NumberPadProps) {
+  const { t } = useT()
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (disabled) return
@@ -43,7 +45,7 @@ export function NumberPad({ value, onChange, onSubmit, disabled }: NumberPadProp
         className="wide"
         onClick={() => onChange(value.slice(0, -1))}
         disabled={disabled}
-        aria-label="Delete last digit"
+        aria-label={t('drill', 'deleteDigit')}
       >
         ⌫
       </button>
@@ -55,9 +57,9 @@ export function NumberPad({ value, onChange, onSubmit, disabled }: NumberPadProp
         className="wide"
         onClick={onSubmit}
         disabled={disabled || value.length === 0}
-        aria-label="Submit answer"
+        aria-label={t('drill', 'submitAnswer')}
       >
-        Strike!
+        {t('drill', 'submit')}
       </button>
     </div>
   )

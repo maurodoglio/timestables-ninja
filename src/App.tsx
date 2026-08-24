@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useT } from './i18n/useT'
 import { useProfile } from './state/ProfileContext'
 import { BeltBadge } from './components/Belt'
 import { Welcome } from './screens/Welcome'
@@ -14,12 +15,14 @@ import { Settings } from './screens/Settings'
 export default function App() {
   const { profile } = useProfile()
   const location = useLocation()
+  const { t, language } = useT()
 
   useEffect(() => {
     const root = document.documentElement
+    root.lang = language
     root.dataset.readableFont = String(profile?.settings.readableFont ?? false)
     root.dataset.reducedMotion = String(profile?.settings.reducedMotion ?? false)
-  }, [profile?.settings.readableFont, profile?.settings.reducedMotion])
+  }, [language, profile?.settings.readableFont, profile?.settings.reducedMotion])
 
   if (!profile) {
     return (
@@ -36,12 +39,16 @@ export default function App() {
       <header className="header">
         <div className="header-inner">
           <Link to="/" className="brand">
-            <span aria-hidden="true">🥷</span> Times Tables Ninja
+            <span aria-hidden="true">🥷</span> {t('common', 'appName')}
           </Link>
           <div className="row">
             <BeltBadge belt={profile.belt} />
             {location.pathname !== '/settings' && (
-              <Link to="/settings" className="btn btn-small btn-ghost" aria-label="Dojo settings">
+              <Link
+                to="/settings"
+                className="btn btn-small btn-ghost"
+                aria-label={t('common', 'settings')}
+              >
                 ⚙️
               </Link>
             )}

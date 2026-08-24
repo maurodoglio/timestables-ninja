@@ -5,6 +5,7 @@ import { selectQuestions } from '../game/questions'
 import type { Answer } from '../game/scoring'
 import { Drill } from '../components/Drill'
 import { ResultSummary } from '../components/ResultSummary'
+import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'
 import { useFinishSession } from '../state/useFinishSession'
 
@@ -14,6 +15,7 @@ export function TrainingHall() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
   const finish = useFinishSession()
+  const { t } = useT()
   const unlocked = unlockedTables(profile.belt)
 
   const [selected, setSelected] = useState<number[]>(unlocked)
@@ -34,8 +36,10 @@ export function TrainingHall() {
     [phase, seed],
   )
 
-  const toggle = (t: number) =>
-    setSelected((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]))
+  const toggle = (table: number) =>
+    setSelected((prev) =>
+      prev.includes(table) ? prev.filter((x) => x !== table) : [...prev, table],
+    )
 
   const start = () => {
     setSeed((s) => s + 1)
@@ -63,7 +67,7 @@ export function TrainingHall() {
   if (phase === 'done') {
     return (
       <ResultSummary
-        title="Training complete"
+        title={t('result', 'trainingComplete')}
         answers={answers}
         xpEarned={xp}
         onAgain={start}
@@ -75,23 +79,27 @@ export function TrainingHall() {
   return (
     <div className="stack">
       <div className="panel stack">
-        <h1>🏯 Training Hall</h1>
-        <p>Choose your tables and train at your own pace. Nothing here affects your belt.</p>
+        <h1>{t('training', 'title')}</h1>
+        <p>{t('training', 'intro')}</p>
 
-        <h3>Tables</h3>
+        <h3>{t('training', 'tables')}</h3>
         <div className="table-picker">
-          {MULTIPLIERS.map((t) => {
-            const locked = !unlocked.includes(t)
+          {MULTIPLIERS.map((table) => {
+            const locked = !unlocked.includes(table)
             return (
               <button
-                key={t}
+                key={table}
                 type="button"
-                aria-pressed={selected.includes(t)}
+                aria-pressed={selected.includes(table)}
                 disabled={locked}
-                title={locked ? 'Earn a higher belt to unlock this table' : `${t} times table`}
-                onClick={() => toggle(t)}
+                title={
+                  locked
+                    ? t('training', 'lockedHint')
+                    : t('training', 'tableTitle', { n: table })
+                }
+                onClick={() => toggle(table)}
               >
-                {t}
+                {table}
                 {locked ? ' 🔒' : ''}
               </button>
             )
@@ -103,18 +111,18 @@ export function TrainingHall() {
             className="btn btn-small btn-ghost"
             onClick={() => setSelected(unlocked)}
           >
-            Select all unlocked
+            {t('training', 'selectAll')}
           </button>
           <button
             type="button"
             className="btn btn-small btn-ghost"
             onClick={() => setSelected([])}
           >
-            Clear
+            {t('training', 'clear')}
           </button>
         </div>
 
-        <h3>How many questions?</h3>
+        <h3>{t('training', 'howMany')}</h3>
         <div className="row">
           {LENGTHS.map((n) => (
             <button
@@ -129,14 +137,14 @@ export function TrainingHall() {
         </div>
 
         <div className="switch">
-          <span>Use a gentle timer (10 seconds per question)</span>
+          <span>{t('training', 'gentleTimer')}</span>
           <button
             type="button"
             className={`btn btn-small ${timed ? 'btn-primary' : ''}`}
             aria-pressed={timed}
             onClick={() => setTimed((v) => !v)}
           >
-            {timed ? 'On' : 'Off'}
+            {timed ? t('common', 'on') : t('common', 'off')}
           </button>
         </div>
 
@@ -146,7 +154,7 @@ export function TrainingHall() {
           disabled={selected.length === 0}
           onClick={start}
         >
-          Begin training
+          {t('training', 'begin')}
         </button>
       </div>
     </div>

@@ -1,11 +1,16 @@
 import { beltIndex } from '../game/belts'
 import { masteryLevel } from '../game/questions'
+import type { Translations } from '../i18n/en'
 import type { Profile, SessionResult } from '../game/types'
+
+type AchievementKey = keyof Translations['achievements']
 
 export interface Achievement {
   id: string
-  name: string
-  description: string
+  /** Translation key for this achievement's name and description. */
+  key: AchievementKey
+  /** Translation key for the description. */
+  descKey: AchievementKey
   icon: string
   earned: (profile: Profile, session?: SessionResult) => boolean
 }
@@ -16,57 +21,57 @@ const masteredCount = (profile: Profile): number =>
 export const ACHIEVEMENTS: Achievement[] = [
   {
     id: 'first-steps',
-    name: 'First Steps',
-    description: 'Finish your first training session.',
+    key: 'firstSteps',
+    descKey: 'firstStepsDesc',
     icon: '🥋',
     earned: (p) => p.history.length >= 1,
   },
   {
     id: 'perfect-kata',
-    name: 'Perfect Kata',
-    description: 'Answer every question in a session correctly.',
+    key: 'perfectKata',
+    descKey: 'perfectKataDesc',
     icon: '🎯',
     earned: (_p, s) => !!s && s.total >= 10 && s.correct === s.total,
   },
   {
     id: 'dawn-trainer',
-    name: 'Dawn Trainer',
-    description: 'Train seven days in a row.',
+    key: 'dawnTrainer',
+    descKey: 'dawnTrainerDesc',
     icon: '🌅',
     earned: (p) => p.streakDays >= 7,
   },
   {
     id: 'swift-hands',
-    name: 'Swift Hands',
-    description: 'Average under three seconds per answer in a session.',
+    key: 'swiftHands',
+    descKey: 'swiftHandsDesc',
     icon: '💨',
     earned: (_p, s) => !!s && s.total >= 10 && s.averageMs > 0 && s.averageMs < 3000,
   },
   {
     id: 'belt-collector',
-    name: 'Belt Collector',
-    description: 'Earn the green belt.',
+    key: 'beltCollector',
+    descKey: 'beltCollectorDesc',
     icon: '🟢',
     earned: (p) => beltIndex(p.belt) >= beltIndex('green'),
   },
   {
     id: 'sparring-star',
-    name: 'Sparring Star',
-    description: 'Score 30 or more in a sparring run.',
+    key: 'sparringStar',
+    descKey: 'sparringStarDesc',
     icon: '⚡',
     earned: (p) => p.sparringBest >= 30,
   },
   {
     id: 'fact-hunter',
-    name: 'Fact Hunter',
-    description: 'Master 50 different facts.',
+    key: 'factHunter',
+    descKey: 'factHunterDesc',
     icon: '📜',
     earned: (p) => masteredCount(p) >= 50,
   },
   {
     id: 'grandmaster',
-    name: 'Grandmaster',
-    description: 'Reach the rank of Ninja Master.',
+    key: 'grandmaster',
+    descKey: 'grandmasterDesc',
     icon: '🏆',
     earned: (p) => p.belt === 'master',
   },

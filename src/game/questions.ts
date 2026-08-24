@@ -77,8 +77,13 @@ function weightedPick(pool: Fact[], weights: number[], rng: Rng): number {
   const total = weights.reduce((s, w) => s + w, 0)
   let roll = rng() * total
   for (let i = 0; i < pool.length; i += 1) {
+    if (weights[i] <= 0) continue
     roll -= weights[i]
     if (roll <= 0) return i
+  }
+  // Rounding can exhaust the roll early; fall back to the last eligible fact.
+  for (let i = pool.length - 1; i >= 0; i -= 1) {
+    if (weights[i] > 0) return i
   }
   return pool.length - 1
 }
