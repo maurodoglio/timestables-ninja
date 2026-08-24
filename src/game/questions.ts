@@ -112,10 +112,18 @@ export function selectQuestions({
   for (let i = 0; i < count; i += 1) {
     const kind: QuestionKind =
       includeDivision && rng() < 0.3 ? 'divide' : 'multiply'
-    const weights = pool.map((f) => {
-      const w = factWeight(stats[factKey(kind, f.a, f.b)], now)
-      return makeQuestion(f, kind).id === lastId ? w * 0.05 : w
-    })
+    const weights = pool.map((f) =>
+      factWeight(stats[factKey(kind, f.a, f.b)], now),
+    )
+    const repeatIndices = pool
+      .map((f, idx) => (makeQuestion(f, kind).id === lastId ? idx : -1))
+      .filter((idx) => idx >= 0)
+    // Exclude the previously asked question, unless it is the only distinct
+    // question available (e.g. a single-fact pool), in which case a repeat
+    // is unavoidable and the original weights are kept.
+    if (repeatIndices.length < pool.length) {
+      for (const idx of repeatIndices) weights[idx] = 0
+    }
     const q = makeQuestion(pool[weightedPick(pool, weights, rng)], kind)
     lastId = q.id
     questions.push(q)
