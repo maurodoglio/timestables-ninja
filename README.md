@@ -68,9 +68,8 @@ and is covered by unit tests. React screens and components sit on top.
 The app builds to plain static files (`npm run build` → `dist/`) and uses hash
 routing, so it can be served from any static host or sub-path.
 
-GitHub Pages deployment via GitHub Actions is not yet wired up: adding workflow
-files requires a token with the `workflow` scope. To enable it, add a workflow
-that runs `npm ci && npm test && npm run build` with
-`VITE_BASE=/<repository-name>/` and publishes `dist/` using
-`actions/upload-pages-artifact` and `actions/deploy-pages`, then set the Pages
-source to "GitHub Actions" in repository settings.
+Ready-to-use CI and GitHub Pages workflows live in
+[`workflow-templates/`](workflow-templates/). They are not yet active because
+adding files under `.github/workflows/` requires a token with the `workflow`
+scope. See [`workflow-templates/README.md`](workflow-templates/README.md) for
+the three commands that enable them.
