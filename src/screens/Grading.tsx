@@ -15,7 +15,10 @@ export function Grading() {
   const navigate = useNavigate()
   const finish = useFinishSession()
   const { t, fmt } = useT()
-  const target = nextBelt(profile.belt)
+  // Freeze the belt being graded at mount time: passing promotes
+  // `profile.belt`, which would otherwise make `nextBelt` point one belt
+  // further and show the wrong belt on the results screen.
+  const [target] = useState(() => nextBelt(profile.belt))
   const targetName = target ? t('belts', target.id) : ''
 
   const [phase, setPhase] = useState<'brief' | 'drill' | 'done'>('brief')
