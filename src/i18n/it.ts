@@ -124,6 +124,7 @@ export const it: Translations = {
     personalBest: 'Record personale',
     start: 'Inizia il round',
     newBest: 'Nuovo record personale: {score}!',
+    matchedBest: 'Hai eguagliato il tuo record: {score}',
     landed: 'Hai messo a segno {score} colpi',
     best: 'Record personale: {best}',
   },
