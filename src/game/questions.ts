@@ -114,8 +114,15 @@ export function selectQuestions({
       includeDivision && rng() < 0.3 ? 'divide' : 'multiply'
     const weights = pool.map((f) => {
       const w = factWeight(stats[factKey(kind, f.a, f.b)], now)
-      return makeQuestion(f, kind).id === lastId ? w * 0.05 : w
+      return makeQuestion(f, kind).id === lastId ? 0 : w
     })
+    if (weights.every((w) => w === 0)) {
+      // Only one distinct question is possible (e.g. a single-fact pool);
+      // fall back to the original weights rather than picking nothing.
+      pool.forEach((f, idx) => {
+        weights[idx] = factWeight(stats[factKey(kind, f.a, f.b)], now)
+      })
+    }
     const q = makeQuestion(pool[weightedPick(pool, weights, rng)], kind)
     lastId = q.id
     questions.push(q)
