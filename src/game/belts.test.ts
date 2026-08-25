@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BELTS, gradingTables, nextBelt, unlockedTables } from './belts'
+import { BELTS, gradingTables, isBeltId, nextBelt, unlockedTables } from './belts'
 
 describe('belts', () => {
   it('accumulates tables across the ladder', () => {
@@ -27,6 +27,13 @@ describe('belts', () => {
   it('grades a belt on its own tables plus everything earned before', () => {
     expect(gradingTables('orange')).toEqual([1, 2, 3, 5, 10])
     expect(gradingTables('master')).toHaveLength(12)
+  })
+
+  it('recognises only belts on the ladder', () => {
+    expect(isBeltId('white')).toBe(true)
+    expect(isBeltId('master')).toBe(true)
+    expect(isBeltId('rainbow')).toBe(false)
+    expect(isBeltId(undefined)).toBe(false)
   })
 
   it('tightens the time limit as belts get harder', () => {

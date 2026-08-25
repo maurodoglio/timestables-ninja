@@ -119,6 +119,11 @@ export const BELTS: Belt[] = buildBelts()
 
 export const BELT_ORDER: BeltId[] = BELTS.map((b) => b.id)
 
+/** Whether a stored value names a belt on the ladder. */
+export function isBeltId(value: unknown): value is BeltId {
+  return typeof value === 'string' && BELT_ORDER.includes(value as BeltId)
+}
+
 export function getBelt(id: BeltId): Belt {
   const belt = BELTS.find((b) => b.id === id)
   if (!belt) throw new Error(`Unknown belt: ${id}`)

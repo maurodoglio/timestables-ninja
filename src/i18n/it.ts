@@ -207,6 +207,15 @@ export const it: Translations = {
     master: 'Ora devi disfare ciò che sai: la divisione è la moltiplicazione al contrario.',
   },
 
+  errorScreen: {
+    title: 'La tua pergamena è danneggiata',
+    body:
+      'Qualcosa è andato storto e il dojo non si è aperto. Riprovare può bastare. Se succede ancora, puoi cancellare i progressi e ricominciare.',
+    reload: 'Riprova',
+    reset: 'Cancella i miei progressi',
+    resetConfirm: 'Vuoi lasciare il dojo e cancellare tutti i progressi?',
+  },
+
   achievements: {
     scrollEarned: 'Pergamena conquistata: {name}',
     firstSteps: 'Primi Passi',
