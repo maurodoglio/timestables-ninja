@@ -114,6 +114,7 @@ export const en = {
     personalBest: 'Personal best',
     start: 'Start the round',
     newBest: 'New personal best: {score}!',
+    matchedBest: 'You matched your best: {score}',
     landed: 'You landed {score} strikes',
     best: 'Personal best: {best}',
   },

@@ -11,6 +11,19 @@ import { useFinishSession } from '../state/useFinishSession'
 
 const INITIAL_BATCH = 40
 
+export type SparringVerdict = 'newBest' | 'matchedBest' | 'landed'
+
+/**
+ * Compare a finished round against the best held *before* it was recorded, so
+ * a tie is reported as a match rather than a new personal best.
+ */
+export function sparringVerdict(score: number, previousBest: number): SparringVerdict {
+  if (score <= 0) return 'landed'
+  if (score > previousBest) return 'newBest'
+  if (score === previousBest) return 'matchedBest'
+  return 'landed'
+}
+
 export function Sparring() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
@@ -22,6 +35,7 @@ export function Sparring() {
   const [answers, setAnswers] = useState<Answer[]>([])
   const [xp, setXp] = useState(0)
   const [score, setScore] = useState(0)
+  const [previousBest, setPreviousBest] = useState(0)
   const [seed, setSeed] = useState(0)
 
   const questions = useMemo(
@@ -47,9 +61,11 @@ export function Sparring() {
         onQuit={() => navigate('/')}
         onFinish={(all) => {
           const correct = all.filter((a) => a.correct).length
+          const best = profile.sparringBest
           const outcome = finish({ mode: 'sparring', answers: all, sparringScore: correct })
           setAnswers(all)
           setScore(correct)
+          setPreviousBest(best)
           setXp(outcome?.result.xpEarned ?? 0)
           setPhase('done')
         }}
@@ -58,14 +74,10 @@ export function Sparring() {
   }
 
   if (phase === 'done') {
-    const isBest = score >= profile.sparringBest && score > 0
+    const verdict = sparringVerdict(score, previousBest)
     return (
       <ResultSummary
-        title={
-          isBest
-            ? t('sparringScreen', 'newBest', { score })
-            : t('sparringScreen', 'landed', { score })
-        }
+        title={t('sparringScreen', verdict, { score })}
         answers={answers}
         xpEarned={xp}
         onAgain={() => {
