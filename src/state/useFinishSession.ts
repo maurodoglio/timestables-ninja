@@ -1,9 +1,8 @@
 import { useCallback } from 'react'
-import { getAchievement } from '../state/achievements'
+import { getAchievement, type RecordOptions } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
 import { useProfile } from '../state/ProfileContext'
 import { useToast } from '../components/Toast'
-import type { RecordOptions } from '../state/session'
 
 /**
  * Records a finished session and raises toasts for anything newly unlocked,

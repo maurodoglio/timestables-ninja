@@ -7,7 +7,7 @@ import {
   type Key,
   type Language,
   type Section,
-} from './index'
+} from '@timestables-ninja/core'
 
 export interface Translator {
   language: Language

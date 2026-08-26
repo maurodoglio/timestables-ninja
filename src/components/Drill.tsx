@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Question } from '../game/types'
-import type { Answer } from '../game/scoring'
+import type { Question, Answer } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
 import { NumberPad } from './NumberPad'
 
