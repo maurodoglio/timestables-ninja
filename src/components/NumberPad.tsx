@@ -3,12 +3,20 @@ import { useT } from '../i18n/useT'
 
 interface NumberPadProps {
   value: string
-  onChange: (next: string) => void
+  /**
+   * Functional updater, mirroring React's setState signature. Rapid taps on a
+   * tablet can fire several click events before a re-render happens, so
+   * button handlers must derive the next value from the latest state rather
+   * than from a `value` closed over at render time - otherwise fast taps get
+   * silently dropped when later updates overwrite earlier ones.
+   */
+  onChange: (updater: (prev: string) => string) => void
   onSubmit: () => void
   disabled?: boolean
 }
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+const MAX_LENGTH = 4
 
 /**
  * Big-target keypad for tablets, with physical keyboard support so it also
@@ -20,9 +28,9 @@ export function NumberPad({ value, onChange, onSubmit, disabled }: NumberPadProp
     const onKey = (e: KeyboardEvent) => {
       if (disabled) return
       if (e.key >= '0' && e.key <= '9') {
-        onChange((value + e.key).slice(0, 4))
+        onChange((prev) => (prev + e.key).slice(0, MAX_LENGTH))
       } else if (e.key === 'Backspace') {
-        onChange(value.slice(0, -1))
+        onChange((prev) => prev.slice(0, -1))
       } else if (e.key === 'Enter' && value.length > 0) {
         onSubmit()
       }
@@ -31,7 +39,7 @@ export function NumberPad({ value, onChange, onSubmit, disabled }: NumberPadProp
     return () => window.removeEventListener('keydown', onKey)
   }, [value, onChange, onSubmit, disabled])
 
-  const press = (digit: string) => onChange((value + digit).slice(0, 4))
+  const press = (digit: string) => onChange((prev) => (prev + digit).slice(0, MAX_LENGTH))
 
   return (
     <div className="pad">
@@ -43,7 +51,7 @@ export function NumberPad({ value, onChange, onSubmit, disabled }: NumberPadProp
       <button
         type="button"
         className="wide"
-        onClick={() => onChange(value.slice(0, -1))}
+        onClick={() => onChange((prev) => prev.slice(0, -1))}
         disabled={disabled}
         aria-label={t('drill', 'deleteDigit')}
       >

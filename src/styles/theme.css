@@ -327,6 +327,9 @@ a {
   background: var(--panel-2);
   color: var(--ink);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .pad button:active {
