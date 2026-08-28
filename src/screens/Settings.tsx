@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LANGUAGES } from '../i18n'
+import { LANGUAGES } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
 import { useProfile, useRequiredProfile } from '../state/ProfileContext'
 import { exportProfile, importProfile } from '../state/storage'

@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { nextBelt, unlockedTables } from '../game/belts'
-import { weakestFacts } from '../game/questions'
+import { nextBelt, unlockedTables, weakestFacts } from '@timestables-ninja/core'
 import { BeltBadge, NinjaAvatar } from '../components/Belt'
 import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'

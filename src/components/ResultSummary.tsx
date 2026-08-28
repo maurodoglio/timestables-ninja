@@ -1,4 +1,4 @@
-import type { Answer } from '../game/scoring'
+import type { Answer } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
 
 interface Props {

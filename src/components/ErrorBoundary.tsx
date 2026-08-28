@@ -1,5 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { detectLanguage, translate } from '../i18n'
+import { detectLanguage, translate } from '@timestables-ninja/core'
 import { clearProfile } from '../state/storage'
 
 interface Props {

@@ -7,8 +7,8 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { Profile, Settings } from '../game/types'
-import { recordSession, type RecordOptions, type RecordedSession } from './session'
+import type { Profile, Settings } from '@timestables-ninja/core'
+import { recordSession, type RecordOptions, type RecordedSession } from '@timestables-ninja/core'
 import {
   createProfile,
   clearProfile,

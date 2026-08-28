@@ -61,19 +61,21 @@ Italian is a full localisation, not just translated labels: belts become
 mnemonics still work, division uses the `:` symbol taught in Italian primary
 schools, and numbers use a decimal comma.
 
-Translations live in `src/i18n`:
+Translations live in
+[`timestables-ninja-core`](https://github.com/maurodoglio/timestables-ninja-core)
+(`src/i18n`), the shared package this app depends on — see below:
 
 - `en.ts` — the English catalogue and the `Translations` type
 - `it.ts` — the Italian catalogue, typed as `Translations` so a missing key is a
   compile error
 - `index.ts` — language detection, `{placeholder}` interpolation and locale
   formatters
-- `useT.ts` — the `useT()` hook React components use
+- `useT.ts` (in this repo, `src/i18n`) — the `useT()` hook React components use
 
 To add a language, copy `it.ts`, register it in `CATALOGUES` and `LANGUAGES` in
-`index.ts`, and widen the `Language` union in `src/game/types.ts`. The test in
-`src/i18n/i18n.test.ts` checks every catalogue has matching keys and
-placeholders.
+`index.ts`, and widen the `Language` union in `src/game/types.ts` — all in the
+`timestables-ninja-core` repo. The test in `i18n.test.ts` checks every
+catalogue has matching keys and placeholders.
 
 ## Development
 
@@ -84,11 +86,25 @@ npm test         # run the unit tests
 npm run build    # type-check and build to dist/
 ```
 
-Pure game logic lives in `src/game` (belts, question selection, scoring) and
-`src/state` (persistence, sessions, achievements); it has no React dependencies
-and is covered by unit tests. React screens and components sit on top.
+Framework-free game logic (belts, question selection, scoring), i18n, and pure
+profile/session helpers live in
+[`timestables-ninja-core`](https://github.com/maurodoglio/timestables-ninja-core),
+a separate package this app depends on via a git dependency (no npm publish
+yet — see that repo's README). It has no React dependency and is shared with
+the iOS app (`timestables-ninja-ios`), so belts, scoring, and translations
+never drift between clients. `src/state/storage.ts` in this repo is the only
+localStorage-specific code; `src/state/ProfileContext.tsx` wires it into
+React.
+
+## iOS app & cross-device accounts
+
+An iOS app ([`timestables-ninja-ios`](https://github.com/maurodoglio/timestables-ninja-ios),
+Expo/React Native) is in progress, adding Sign in with Apple accounts,
+cross-device profile sync, and async friend battles. This web app
+deliberately stays local-only with no accounts — those features are iOS-only.
 
 ## Deployment
+
 
 The app builds to plain static files (`npm run build` → `dist/`) and uses hash
 routing, so it can be served from any static host or sub-path.

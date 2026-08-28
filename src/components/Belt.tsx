@@ -1,6 +1,5 @@
-import { getBelt } from '../game/belts'
+import { getBelt, type BeltId } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
-import type { BeltId } from '../game/types'
 
 export function BeltBadge({ belt, label }: { belt: BeltId; label?: string }) {
   const b = getBelt(belt)

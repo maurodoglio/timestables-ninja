@@ -1,8 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GRADING_LENGTH, gradingTables, nextBelt } from '../game/belts'
-import { selectQuestions } from '../game/questions'
-import { evaluateGrading, type Answer, type GradingOutcome } from '../game/scoring'
+import {
+  GRADING_LENGTH,
+  gradingTables,
+  nextBelt,
+  selectQuestions,
+  evaluateGrading,
+  type Answer,
+  type GradingOutcome,
+} from '@timestables-ninja/core'
 import { Drill } from '../components/Drill'
 import { ResultSummary } from '../components/ResultSummary'
 import { BeltBadge, NinjaAvatar } from '../components/Belt'

@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router-dom'
-import { BELTS, MULTIPLIERS, beltIndex, unlockedTables } from '../game/belts'
-import { masteryLevel } from '../game/questions'
-import { factKey } from '../game/types'
-import { ACHIEVEMENTS } from '../state/achievements'
+import {
+  BELTS,
+  MULTIPLIERS,
+  beltIndex,
+  unlockedTables,
+  masteryLevel,
+  factKey,
+  ACHIEVEMENTS,
+} from '@timestables-ninja/core'
 import { BeltBadge } from '../components/Belt'
 import { useT } from '../i18n/useT'
 import { useRequiredProfile } from '../state/ProfileContext'
-import type { SessionMode } from '../game/types'
+import type { SessionMode } from '@timestables-ninja/core'
 
 export function ProgressScroll() {
   const profile = useRequiredProfile()
