@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LANGUAGES } from '@timestables-ninja/core'
+import { AVATARS, LANGUAGES } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
+import { localT } from '../i18n/local'
 import { useProfile, useRequiredProfile } from '../state/ProfileContext'
 import { exportProfile, importProfile } from '../state/storage'
 
@@ -39,11 +40,18 @@ function Toggle({ label, hint, onLabel, offLabel, value, onChange }: ToggleProps
 
 export function Settings() {
   const profile = useRequiredProfile()
-  const { updateSettings, setProfile, resetProfile } = useProfile()
+  const { updateSettings, renameProfile, setAvatar, setProfile, resetProfile } = useProfile()
   const navigate = useNavigate()
   const { t, language } = useT()
   const fileRef = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState('')
+  const [nameDraft, setNameDraft] = useState(profile.name)
+  const [nameMessage, setNameMessage] = useState('')
+
+  const saveName = () => {
+    renameProfile(nameDraft)
+    setNameMessage(localT(language, 'nameSaved'))
+  }
 
   const on = t('common', 'on')
   const off = t('common', 'off')
@@ -123,6 +131,53 @@ export function Settings() {
           value={profile.settings.readableFont}
           onChange={(v) => updateSettings({ readableFont: v })}
         />
+      </div>
+
+      <div className="panel stack">
+        <h2>{localT(language, 'nameTitle')}</h2>
+        <label htmlFor="display-name">{localT(language, 'nameLabel')}</label>
+        <div className="row">
+          <input
+            id="display-name"
+            type="text"
+            value={nameDraft}
+            placeholder={localT(language, 'namePlaceholder')}
+            onChange={(e) => {
+              setNameDraft(e.target.value)
+              setNameMessage('')
+            }}
+          />
+          <button type="button" className="btn btn-primary" onClick={saveName}>
+            {localT(language, 'nameSave')}
+          </button>
+        </div>
+        {nameMessage && <p role="status">{nameMessage}</p>}
+      </div>
+
+      <div className="panel stack">
+        <h2 id="avatar-label">{localT(language, 'avatarTitle')}</h2>
+        <p className="muted">{localT(language, 'avatarHint')}</p>
+        <div className="row" role="group" aria-labelledby="avatar-label">
+          {AVATARS.map((avatar) => {
+            const selected = profile.avatarId === avatar.id
+            return (
+              <button
+                key={avatar.id}
+                type="button"
+                className={`btn btn-small ${selected ? 'btn-primary' : ''}`}
+                aria-pressed={selected}
+                aria-label={selected ? `${avatar.label} — ${localT(language, 'avatarSelected')}` : avatar.label}
+                style={{ borderColor: avatar.color }}
+                onClick={() => setAvatar(avatar.id)}
+              >
+                <span aria-hidden="true">{avatar.label}</span>
+                <span className="muted" style={{ marginLeft: '0.35rem', fontSize: '0.8rem' }}>
+                  ⭐ {avatar.starCost}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       <div className="panel stack">

@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-import { nextBelt, unlockedTables, weakestFacts } from '@timestables-ninja/core'
+import { formatStars, getAvatar, nextBelt, unlockedTables, weakestFacts } from '@timestables-ninja/core'
 import { BeltBadge, NinjaAvatar } from '../components/Belt'
 import { useT } from '../i18n/useT'
+import { localT } from '../i18n/local'
 import { useRequiredProfile } from '../state/ProfileContext'
 
 interface ModeCardProps {
@@ -27,10 +28,11 @@ function ModeCard({ icon, title, desc, onClick, disabled }: ModeCardProps) {
 export function Dojo() {
   const profile = useRequiredProfile()
   const navigate = useNavigate()
-  const { t, fmt } = useT()
+  const { t, fmt, language } = useT()
   const next = nextBelt(profile.belt)
   const nextName = next ? t('belts', next.id) : ''
   const weak = weakestFacts(unlockedTables(profile.belt), profile.facts, 1)
+  const avatar = getAvatar(profile.avatarId)
 
   return (
     <div className="stack">
@@ -39,13 +41,17 @@ export function Dojo() {
           <div className="row">
             <NinjaAvatar belt={profile.belt} />
             <div>
-              <h1>{profile.name}</h1>
+              <h1>
+                {profile.name} <span aria-hidden="true">{avatar.label}</span>
+              </h1>
               <BeltBadge belt={profile.belt} />
             </div>
           </div>
           <div className="row">
             <span className="chip">{t('dojo', 'streak', { count: profile.streakDays })}</span>
-            <span className="chip">{t('dojo', 'points', { count: profile.xp })}</span>
+            <span className="chip" title={localT(language, 'ninjaStars')}>
+              {formatStars(profile.xp)}
+            </span>
           </div>
         </div>
         <p>{t('dojo', 'senseiQuote', { tip: t('senseiTips', profile.belt) })}</p>
