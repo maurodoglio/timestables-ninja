@@ -7,6 +7,7 @@ import {
   masteryLevel,
   factKey,
   ACHIEVEMENTS,
+  formatStars,
 } from '@timestables-ninja/core'
 import { BeltBadge } from '../components/Belt'
 import { useT } from '../i18n/useT'
@@ -35,7 +36,7 @@ export function ProgressScroll() {
         <h1>{t('progress', 'title')}</h1>
         <div className="grid">
           <div className="stat">
-            <div className="value">{profile.xp}</div>
+            <div className="value">{formatStars(profile.xp)}</div>
             <div className="label">{t('progress', 'trainingPoints')}</div>
           </div>
           <div className="stat">

@@ -7,8 +7,13 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import type { Profile, Settings } from '@timestables-ninja/core'
-import { recordSession, type RecordOptions, type RecordedSession } from '@timestables-ninja/core'
+import type { AvatarId, Profile, Settings } from '@timestables-ninja/core'
+import {
+  recordSession,
+  renameProfile as renameProfileHelper,
+  type RecordOptions,
+  type RecordedSession,
+} from '@timestables-ninja/core'
 import {
   createProfile,
   clearProfile,
@@ -21,8 +26,14 @@ interface ProfileContextValue {
   startProfile: (name: string) => void
   setProfile: (profile: Profile) => void
   updateSettings: (patch: Partial<Settings>) => void
+  renameProfile: (name: string) => void
+  setAvatar: (avatarId: AvatarId) => void
   finishSession: (options: RecordOptions) => RecordedSession | null
   resetProfile: () => void
+}
+
+export function applyAvatar(profile: Profile, avatarId: AvatarId): Profile {
+  return { ...profile, avatarId, updatedAt: Date.now() }
 }
 
 const ProfileContext = createContext<ProfileContextValue | null>(null)
@@ -46,6 +57,14 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     )
   }, [])
 
+  const renameProfile = useCallback((name: string) => {
+    setProfileState((prev) => (prev ? renameProfileHelper(prev, name) : prev))
+  }, [])
+
+  const setAvatar = useCallback((avatarId: AvatarId) => {
+    setProfileState((prev) => (prev ? applyAvatar(prev, avatarId) : prev))
+  }, [])
+
   const finishSession = useCallback((options: RecordOptions) => {
     let outcome: RecordedSession | null = null
     setProfileState((prev) => {
@@ -62,8 +81,26 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ profile, startProfile, setProfile, updateSettings, finishSession, resetProfile }),
-    [profile, startProfile, setProfile, updateSettings, finishSession, resetProfile],
+    () => ({
+      profile,
+      startProfile,
+      setProfile,
+      updateSettings,
+      renameProfile,
+      setAvatar,
+      finishSession,
+      resetProfile,
+    }),
+    [
+      profile,
+      startProfile,
+      setProfile,
+      updateSettings,
+      renameProfile,
+      setAvatar,
+      finishSession,
+      resetProfile,
+    ],
   )
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>

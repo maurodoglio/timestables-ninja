@@ -1,4 +1,5 @@
 import type { Answer } from '@timestables-ninja/core'
+import { formatStars } from '@timestables-ninja/core'
 import { useT } from '../i18n/useT'
 
 interface Props {
@@ -35,7 +36,7 @@ export function ResultSummary({ title, answers, xpEarned, children, onAgain, onH
             <div className="label">{t('result', 'averageSpeed')}</div>
           </div>
           <div className="stat">
-            <div className="value">+{xpEarned}</div>
+            <div className="value">{formatStars(xpEarned)}</div>
             <div className="label">{t('result', 'trainingPoints')}</div>
           </div>
         </div>
